@@ -54,6 +54,18 @@ class TempatCatalogTest extends TestCase
             );
     }
 
+    public function test_asset_urls_use_https_when_request_is_forwarded_by_railway(): void
+    {
+        $response = $this->withHeaders([
+            'X-Forwarded-Proto' => 'https',
+            'X-Forwarded-Port' => '443',
+        ])->get(route('tempats.index'));
+
+        $response->assertOk()
+            ->assertSee('href="https://localhost/build/assets/app-', false)
+            ->assertDontSee('href="http://localhost/build/assets/app-', false);
+    }
+
     public function test_address_is_required_when_adding_a_place(): void
     {
         $this->actingAs($this->createAdminUser())
